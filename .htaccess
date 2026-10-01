@@ -1,0 +1,11 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# 1. Redirect actual .html files to the extension-less URL (SEO friendly)
+RewriteCond %{THE_REQUEST} \s/+(.+)\.html [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# 2. Internally map the clean URL back to the .html file so it loads
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]
