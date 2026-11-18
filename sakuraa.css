@@ -1,0 +1,101 @@
+/* Polish layer (loads last). Premium feel: soft 20px surfaces, pill controls, calm hover states, tabbed tool explorer. */
+:root{--r:20px;--r-sm:14px;--card:#0e0e0f;--hair:rgba(255,255,255,.1);color-scheme:dark}
+html{scroll-padding-top:84px;scrollbar-color:#3f3f46 #000}
+p{text-wrap:pretty}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Shapes: one radius language */
+.button,.pill,.pill-tag,.credit-role,.dl-top em,.demo-chip{border-radius:999px}
+.demo-toggle,.to-top{border-radius:50%}
+.feature-card,.demo,.showcase-video,.release-card,.dl-card,.credits-join-card,.proof ul,.shot img{border-radius:var(--r)}
+.faq details,.older-release-row{border-radius:var(--r-sm)}
+.field input,.field input:focus{border-radius:12px}
+.credit-avatar{border-radius:16px}
+.feature-card,.release-card,.dl-card{background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.feature-card,.faq details,.older-release-row{transition:border-color .3s,transform .4s var(--ease-out),opacity .5s var(--ease-out)}
+@media(hover:hover){.feature-card:hover,.fix-list li:hover{transform:translateY(-3px)}}
+
+/* Nav: hover is quiet, the active page is the only filled pill */
+.site-nav{border-radius:999px;background:rgba(0,0,0,.4);backdrop-filter:blur(12px)}
+.site-nav a{border-radius:999px}
+.site-nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+.site-nav a.active,.site-nav a.active:hover{background:#fff;color:#000}
+
+/* Hero fits real mobile viewports */
+.hero{height:min(760px,100svh)}
+.link-out{display:inline-flex;gap:6px;font-size:14px;font-weight:600;color:#fff;border-bottom:1px solid rgba(255,255,255,.3);padding-bottom:2px;transition:border-color .25s,gap .25s}
+.link-out:hover{border-color:#fff;gap:10px}
+
+/* Explore the tools */
+.explore{padding-top:var(--s8)}
+.tabs{display:flex;gap:8px;margin:0 0 var(--s4)}
+.tab{flex:none;font:500 13px var(--sans);color:#d4d4d8;background:transparent;border:1px solid var(--hair);border-radius:999px;padding:10px 18px;cursor:pointer;transition:background .25s,color .25s,border-color .25s}
+.tab:hover{border-color:#fff}
+.tab[aria-selected=true]{background:#fff;color:#000;border-color:#fff}
+.tab-panel{display:none;grid-template-columns:.8fr 1.2fr;gap:var(--s5);align-items:center;background:var(--card);border:1px solid var(--hair);border-radius:var(--r);padding:var(--s5);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.tab-panel.is-active{display:grid;animation:tabin .45s var(--ease-out)}
+@keyframes tabin{from{opacity:0;transform:translateY(8px)}}
+.tab-panel h3{font-size:clamp(28px,3.4vw,44px);line-height:1.05;letter-spacing:-.045em;margin:0 0 var(--s2)}
+.tab-panel p:not(.eyebrow){color:var(--slate);font-size:15px;line-height:1.7;margin:0 0 var(--s3)}
+.tab-panel img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;border:1px solid var(--hair);box-shadow:0 30px 60px -30px #000}
+
+/* Problem / solution */
+.fixes{padding-top:var(--s8)}
+.fixes .sub{color:var(--slate);margin:var(--s2) 0 var(--s5)}
+.fix-list{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2);list-style:none;margin:0;padding:0}
+.fix-list li{background:var(--card);border:1px solid var(--hair);border-radius:var(--r);padding:var(--s4);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);transition:transform .4s var(--ease-out),border-color .3s}
+.fix-list li:hover{border-color:#3f3f46}
+.fix-list h3{font-size:20px;margin:0 0 var(--s1)}
+.fix-list p{color:var(--slate);font-size:14px;line-height:1.7;margin:0}
+
+.footer-main{grid-template-columns:1.4fr 1fr 1fr 1fr}
+
+@media(max-width:860px){.tab-panel{grid-template-columns:1fr;padding:var(--s3)}.fix-list{grid-template-columns:1fr}.footer-main{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.tabs{overflow-x:auto;scrollbar-width:none;margin-inline:-20px;padding-inline:20px}.tabs::-webkit-scrollbar{display:none}}
+/* Small phones: three header buttons no longer overflow */
+@media(max-width:480px){
+  .brand img{width:29px;height:29px}
+  .header-actions .button-quiet{font-size:0;gap:0;padding:0 13px}
+  .header-actions .button-quiet i{font-size:15px}
+}
+
+/* Header: nav flows between brand and actions instead of floating over them */
+.site-nav{position:static;transform:none;margin:0 auto}
+@media(max-width:1140px){.header-actions .button-quiet{font-size:0;gap:0;padding:0 13px}.header-actions .button-quiet i{font-size:15px}}
+
+/* Explore the tools: text on top, screenshot at full panel width, never cropped */
+.tab-panel{grid-template-columns:1fr;gap:var(--s4);align-items:start;padding:var(--s4)}
+.tab-panel>div{display:grid;grid-template-columns:1fr 1fr;column-gap:var(--s5);align-items:end}
+.tab-panel>div .eyebrow{grid-column:1 / -1}
+.tab-panel>div h3{margin:0}
+.tab-panel>div p:not(.eyebrow){grid-column:2;grid-row:2;margin:0 0 var(--s2);max-width:440px}
+.tab-panel>div .link-out{grid-column:2;justify-self:start}
+.tab-panel img{aspect-ratio:auto;height:auto;object-fit:contain}
+@media(max-width:860px){.tab-panel>div{display:block}.tab-panel>div h3{margin-bottom:var(--s2)}.tab-panel>div p:not(.eyebrow){margin-bottom:var(--s3)}}
+
+/* Auto-rotating tabs: a progress bar fills the active tab, then the next one opens */
+.tab{position:relative;overflow:hidden}
+.tab::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:#000;transform:scaleX(0);transform-origin:0 50%}
+.tab.timing::after{animation:tabfill 6.5s linear forwards}
+.explore.is-paused .tab.timing::after{animation-play-state:paused}
+@keyframes tabfill{to{transform:scaleX(1)}}
+
+/* Hero: camera HUD (blinking REC light, running timecode, viewfinder corners) */
+.rec-hud{position:absolute;z-index:2;right:max(28px,calc((100vw - 1120px)/2));top:104px;display:flex;align-items:center;gap:10px;padding:8px 14px 8px 12px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(0,0,0,.45);backdrop-filter:blur(10px);font:600 12px var(--sans);letter-spacing:.12em;color:#fff}
+.rec-dot{position:relative;width:9px;height:9px;border-radius:50%;background:#ff2d2d;box-shadow:0 0 10px 1px rgba(255,45,45,.8);animation:rec-blink 1.2s step-end infinite}
+.rec-dot::after{content:'';position:absolute;inset:0;border-radius:50%;border:1.5px solid #ff2d2d;animation:rec-ring 2.4s ease-out infinite}
+.rec-tc{min-width:11ch;color:#d4d4d8;font-weight:500;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+@keyframes rec-blink{0%,49%{opacity:1}50%,99%{opacity:.12}100%{opacity:1}}
+@keyframes rec-ring{from{transform:scale(1);opacity:.7}to{transform:scale(3.2);opacity:0}}
+.vf{position:absolute;z-index:1;inset:96px 24px 40px;pointer-events:none;opacity:0;animation:fade-rise .8s var(--ease-out) .5s forwards}
+.vf i{position:absolute;width:22px;height:22px;border:0 solid rgba(255,255,255,.5)}
+.vf i:nth-child(1){top:0;left:0;border-width:1.5px 0 0 1.5px}.vf i:nth-child(2){top:0;right:0;border-width:1.5px 1.5px 0 0}
+.vf i:nth-child(3){bottom:0;left:0;border-width:0 0 1.5px 1.5px}.vf i:nth-child(4){bottom:0;right:0;border-width:0 1.5px 1.5px 0}
+@media(max-width:560px){.rec-hud{top:auto;bottom:24px;right:20px}.vf{inset:84px 14px 14px}.rec-tc{display:none}}
+
+/* Explore tabs: auto-advance progress fills the active pill */
+.tab{position:relative;isolation:isolate;overflow:hidden}
+.tab-prog{position:absolute;inset:0;z-index:-1;background:rgba(0,0,0,.16);transform:scaleX(0);transform-origin:0 50%}
+.tab.is-running .tab-prog{animation:tabfill 7s linear forwards}
+.explore.is-paused .tab-prog{animation-play-state:paused}
+@keyframes tabfill{to{transform:scaleX(1)}}

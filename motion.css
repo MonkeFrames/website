@@ -1,0 +1,206 @@
+/* ==========================================================
+   MonkeFrames motion layer
+   Everything here is progressive: without JS the page is
+   fully visible, and prefers-reduced-motion turns it all off.
+   ========================================================== */
+:root {
+    --ease-out: cubic-bezier(.22, 1, .36, 1);
+    --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* Cross-document page transition (index <-> downloads) */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: .25s ease both vt-out; }
+::view-transition-new(root) { animation: .45s var(--ease-out) both vt-in; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+
+::selection { background: var(--lime); color: #151711; }
+:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; border-radius: 4px; }
+
+/* ---------- Scroll progress ---------- */
+.scroll-progress {
+    position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 60;
+    background: var(--lime); transform-origin: 0 50%;
+    transform: scaleX(var(--progress, 0));
+    pointer-events: none;
+}
+
+/* ---------- Sticky header that shrinks ---------- */
+.site-header {
+    position: sticky; top: 0;
+    transition: height .35s var(--ease-out), background .35s, backdrop-filter .35s, border-color .35s, box-shadow .35s;
+}
+.site-header .brand img { transition: transform .5s var(--ease-spring), width .35s var(--ease-out), height .35s var(--ease-out); }
+.site-header .brand:hover img { transform: rotate(-8deg) scale(1.12); }
+.site-header.is-scrolled {
+    height: 56px;
+    background: rgba(17, 18, 15, .72);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border-color: rgba(255, 255, 255, .1);
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, .6);
+}
+.site-header.is-scrolled .brand img { width: 28px; height: 28px; }
+.site-header.is-scrolled .button { min-height: 36px; }
+.site-header .button { transition: transform .25s var(--ease-out), background .25s, color .25s, box-shadow .25s, min-height .35s var(--ease-out), border-color .25s; }
+
+/* ---------- Button micro-interactions ---------- */
+.button { position: relative; overflow: hidden; isolation: isolate; }
+.button:active { transform: translateY(0) scale(.97); box-shadow: none; transition-duration: .08s; }
+.button-quiet:hover { border-color: rgba(255, 255, 255, .4); color: #fff; }
+.button i { transition: transform .3s var(--ease-spring); }
+.button:hover i.fa-download { transform: translateY(3px); }
+.button:hover i.fa-arrow-left { transform: translateX(-4px); }
+/* ---------- Underline that draws left to right ---------- */
+.text-link, .sitemap a, .footer-links a, .changelog a, .downloads-hero .text-link {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0 1px;
+    padding-bottom: 3px;
+    transition: background-size .45s var(--ease-out), color .25s;
+}
+.text-link:hover, .sitemap a:hover, .footer-links a:hover, .changelog a:hover { background-size: 100% 1px; }
+.text-link { align-self: flex-start; }
+.text-link i { display: inline-block; transition: transform .3s var(--ease-spring); }
+.text-link:hover i.fa-arrow-down { transform: translateY(4px); }
+.text-link:hover i.fa-arrow-up-right-from-square { transform: translate(2px, -2px); }
+.footer-links a i { display: inline-block; transition: transform .3s var(--ease-spring); }
+.footer-links a:hover i { transform: translate(2px, -2px); color: var(--lime); }
+.changelog a { color: var(--lime); }
+.sitemap a, .footer-links a { align-self: flex-start; }
+
+/* ---------- Hero choreography (the one big moment) ---------- */
+@keyframes drift { 0% { transform: scale(1.04) translate3d(0, 0, 0); } 100% { transform: scale(1.14) translate3d(-1.5%, -1%, 0); } }
+h1 .line { color: var(--paper); display: block; overflow: hidden; padding: 0 .04em .08em 0; margin-bottom: -.08em; }
+h1 .line > span { display: block; color: inherit; }
+h1 .line > span.accent { color: var(--lime); }
+html.js .hero .line > span { transform: translateY(110%); animation: line-up .7s var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * .08s + .05s); }
+html.js .hero [data-hero] { opacity: 0; transform: translateY(18px); animation: fade-rise .6s var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * .08s); }
+@keyframes line-up { to { transform: none; } }
+@keyframes fade-rise { to { opacity: 1; transform: none; } }
+.status-dot { animation: rec 1.6s ease-in-out infinite; }
+@keyframes rec { 0%, 100% { opacity: 1; box-shadow: 0 0 12px #ff2b2b; } 50% { opacity: .25; box-shadow: 0 0 2px #ff2b2b; } }
+.scroll-cue {
+    position: absolute; z-index: 2; left: 50%; bottom: 24px; width: 22px; height: 34px;
+    border: 1.5px solid rgba(255, 255, 255, .45); border-radius: 12px; transform: translateX(-50%);
+}
+.scroll-cue::after {
+    content: ''; position: absolute; top: 6px; left: 50%; width: 3px; height: 7px; margin-left: -1.5px;
+    border-radius: 2px; background: var(--lime); animation: cue 1.8s ease-in-out infinite;
+}
+@keyframes cue { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(12px); } }
+.slide-indicator { display: none; }
+
+/* ---------- Scroll reveals (fade + rise 16px, staggered) ---------- */
+html.js [data-reveal] {
+    opacity: 0; transform: translateY(12px);
+    transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+    transition-delay: calc(var(--d, 0) * 1ms);
+}
+html.js [data-reveal].in-view { opacity: 1; transform: none; }
+
+/* ---------- Feature cards ---------- */
+.feature-card {
+    --mx: 50%; --my: 50%;
+    transition: border-color .3s, opacity .5s var(--ease-out);
+}
+html.js .feature-card[data-reveal] { transition: opacity .5s var(--ease-out), transform .5s var(--ease-out), border-color .3s; transition-delay: calc(var(--d, 0) * 1ms), calc(var(--d, 0) * 1ms), 0s; }
+.feature-icon { transition: transform .45s var(--ease-spring), background .3s, color .3s, border-color .3s; }
+.feature-card:hover .feature-icon { transform: rotate(-8deg) scale(1.12); background: var(--lime); color: #151711; border-color: var(--lime); }
+.card-index { transition: color .3s, letter-spacing .4s var(--ease-out); }
+.feature-card:hover .card-index { color: var(--lime); letter-spacing: .16em; }
+
+/* Mini illustrations (each shows what the feature does) */
+.timeline-art { position: absolute; left: 25px; right: 25px; bottom: 30px; height: 64px; }
+.timeline-art .track { position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: #34372c; }
+.timeline-art .key {
+    position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; background: #4a4f3c; transform: rotate(45deg);
+    animation: key-hit 6s linear infinite;
+}
+.timeline-art .key:nth-child(2) { left: 12%; animation-delay: -.2s; }
+.timeline-art .key:nth-child(3) { left: 38%; animation-delay: 1.2s; }
+.timeline-art .key:nth-child(4) { left: 61%; animation-delay: 2.4s; }
+.timeline-art .key:nth-child(5) { left: 86%; animation-delay: 3.6s; }
+.timeline-art .playhead {
+    position: absolute; top: 0; bottom: 0; width: 2px; background: #ff3b30; left: 0;
+    animation: scrub 6s linear infinite; box-shadow: 0 0 10px rgba(255, 59, 48, .7);
+}
+@keyframes scrub { from { left: 0; } to { left: 100%; } }
+@keyframes key-hit { 0%, 100% { background: #4a4f3c; } 2%, 14% { background: var(--lime); box-shadow: 0 0 12px var(--lime); } }
+.mini-sliders span:after { animation: slide-a 5s ease-in-out infinite alternate; }
+.mini-sliders span:nth-child(2):after { animation-name: slide-b; animation-duration: 4s; }
+.mini-sliders span:nth-child(3):after { animation-name: slide-c; animation-duration: 6s; }
+@keyframes slide-a { to { left: 78%; } }
+@keyframes slide-b { to { left: 22%; } }
+@keyframes slide-c { to { left: 90%; } }
+.export-art { position: absolute; left: 25px; right: 25px; bottom: 30px; display: grid; gap: 12px; }
+.export-art .bar { height: 6px; border-radius: 4px; background: #2b2e23; overflow: hidden; }
+.export-art .bar::after { content: ''; display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #8d8420, var(--lime)); transform-origin: 0 50%; animation: export-fill 4.5s var(--ease-out) infinite; }
+.export-art .meta { display: flex; justify-content: space-between; font: 9px var(--mono); color: #75796c; letter-spacing: .06em; }
+.export-art .meta b { color: var(--lime); font-weight: 500; animation: blink-done 4.5s steps(1) infinite; }
+@keyframes export-fill { 0% { transform: scaleX(0); } 70%, 100% { transform: scaleX(1); } }
+@keyframes blink-done { 0%, 69% { opacity: .35; } 70%, 100% { opacity: 1; } }
+
+/* ---------- Download band ---------- */
+.download-band { position: relative; overflow: hidden; }
+.download-inner { position: relative; }
+.download-band .button-dark:hover { background: #000; }
+
+/* ---------- Back to top ---------- */
+.to-top {
+    position: fixed; right: 22px; bottom: 22px; z-index: 40; width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid var(--line); background: rgba(26, 28, 23, .85); color: var(--lime);
+    display: grid; place-items: center; cursor: pointer;
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    opacity: 0; transform: translateY(14px) scale(.9); pointer-events: none;
+    transition: opacity .3s, transform .4s var(--ease-spring), background .25s, color .25s;
+}
+.to-top.show { opacity: 1; transform: none; pointer-events: auto; }
+.to-top:hover { background: var(--lime); color: #151711; transform: translateY(-3px); }
+
+/* ---------- Floating-label input (downloads search) ---------- */
+.field { position: relative; max-width: 360px; margin-bottom: 18px; }
+.field input {
+    width: 100%; height: 54px; padding: 22px 44px 6px 16px;
+    background: #171813; color: var(--paper); font: 600 14px var(--sans);
+    border: 1px solid rgba(255, 255, 255, .14); border-radius: 6px; outline: none;
+    transition: border-color .3s, box-shadow .3s, background .3s;
+}
+.field input:hover { border-color: rgba(255, 255, 255, .28); }
+.field input:focus { border-color: var(--lime); box-shadow: 0 0 0 4px rgba(241, 225, 47, .14); background: #1b1d17; }
+.field label {
+    position: absolute; left: 16px; top: 18px; color: #85897d; font-size: 14px; font-weight: 600; pointer-events: none;
+    transform-origin: 0 0; transition: transform .25s var(--ease-out), color .25s;
+}
+.field input:focus + label, .field input:not(:placeholder-shown) + label { transform: translateY(-11px) scale(.74); color: var(--lime); }
+.field > i { position: absolute; right: 16px; top: 19px; color: #5f6357; transition: color .3s, transform .4s var(--ease-spring); }
+.field input:focus ~ i { color: var(--lime); transform: scale(1.15) rotate(-8deg); }
+.field-hint { font: 10px var(--mono); color: #75796c; margin: -8px 0 18px; min-height: 14px; transition: color .3s; }
+
+/* ---------- Downloads page ---------- */
+.release-card { transition: border-color .3s, opacity .5s var(--ease-out); }
+html.js .release-card[data-reveal] { transition: opacity .8s var(--ease-out), transform .8s var(--ease-out), border-color .35s, box-shadow .45s; }
+.older-list { display: grid; gap: 12px; }
+.older-release-row { transition: border-color .3s, background .3s, transform .35s var(--ease-out), opacity .35s; }
+.older-release-row:hover { border-color: #52525b; background: #111; }
+.older-release-row[hidden] { display: none; }
+.no-results { display: none; padding: 20px; border: 1px dashed var(--line); border-radius: 6px; color: #96998e; font-size: 13px; }
+.no-results.show { display: block; animation: fade-rise .5s var(--ease-out) both; }
+.downloads-hero h1 { animation: line-up-soft .9s var(--ease-out) both; }
+@keyframes line-up-soft { from { opacity: 0; transform: translateY(24px); } }
+
+/* ---------- Mobile tweaks ---------- */
+@media (max-width: 760px) {
+    .scroll-cue { display: none; }
+    .site-header.is-scrolled { height: 52px; }
+    .feature-card:hover { transform: none; }
+}
+
+/* ---------- Respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; transition-delay: 0s !important; scroll-behavior: auto !important; }
+    html.js [data-reveal], html.js .hero [data-hero], html.js .hero .line > span { opacity: 1 !important; transform: none !important; }
+    .timeline-art .playhead { left: 40%; }
+}
